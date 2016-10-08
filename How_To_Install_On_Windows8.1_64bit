@@ -1,0 +1,47 @@
+System: Win8.1 64 bit
+Python: Annaconda 2, default Python version
+
+The official installation guide on https://xgboost.readthedocs.io/en/latest/build.html is nothing wrong, however not as clear for a first timmer as me. After some disappointting try and searchingch online for several posts, finally it took me a couple of days to success. I'll write done how to install as well as what I encountered here:
+
+Steps:
+
+1. Download and Install Git Bash
+https://git-scm.com/download/win
+Git-2.10.1-64-bit.exe
+
+2. Download and Install Mingw
+https://sourceforge.net/projects/mingw-w64/files/latest/download
+mingw-w64-install.exe
+Set the Architecture to x86_64 and the Threads to win32. To avoid spaces in the file path, I install into "C:\mingw-w64".
+You may need to add the Path (e.g. for me it is "C:\mingw-w64\x86_64-6.2.0-win32-seh-rt_v5-rev1\mingw64\bin") to Environmental Variables. 
+Then open Git Bash to test:
+which mingw32-make
+C:\mingw-w64\x86_64-6.2.0-win32-seh-rt_v5-rev1\mingw64\bin\mingw32-make
+which gcc
+C:\mingw-w64\x86_64-6.2.0-win32-seh-rt_v5-rev1\mingw64\bin\gcc
+
+3. In Git Bash, 
+alias make=mingw32-make
+(You can also permanently alias make by:
+vim .bashrc
+in Vim, insert the above line, then press "Esc" and type :wq)
+cd c:
+git clone --recursive https://github.com/dmlc/xgboost
+cd xgboost
+git submodule init
+git submodule update
+cp make/mingw64.mk config.mk
+make -j4 
+If the build finishes successfully, you should have a file called xgboost.exe located in the project root. 
+
+4. Install the Python package. Continue in Git Bash (xgboost directory), 
+cd python-package
+python setup.py install Now you should be good to go. Open up Python, and you can import the package with:
+import xgboost as xgb To test the installation
+
+
+Source: 
+https://xgboost.readthedocs.io/en/latest/build.html
+https://stackoverflow.com/questions/35139108/how-to-install-xgboost-in-anaconda-python-windows-platform/39177935#39177935
+("GUYS ITS NOT THAT EASY" part, this is the main guide I used)
+https://www.ibm.com/developerworks/community/blogs/jfp/entry/Installing_XGBoost_For_Anaconda_on_Windows?lang=en
