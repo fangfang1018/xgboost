@@ -39,6 +39,29 @@ cd python-package
 python setup.py install Now you should be good to go. Open up Python, and you can import the package with:
 import xgboost as xgb To test the installation
 
+5. Anaconda Platform
+At first I could only import xgboost through >Git Bash >Python, but not cmd.exe or Pycharm-Anaconda2. 
+The error message is like discussed in https://www.google.com/webhp?sourceid=chrome-instant&rlz=1C1CHWA_enUS605US605&ion=1&espv=2&ie=UTF-8#q=xgboost+WindowsError:+%5BError+127%5D+The+specified+module+could+not+be+found:
+  File "<stdin>", line 1, in <module>
+  File "xgboost\__init__.py", line 11, in <module>
+    from .core import DMatrix, Booster
+  File "xgboost\core.py", line 83, in <module>
+    _LIB = _load_lib()
+  File "xgboost\core.py", line 77, in _load_lib
+    lib = ctypes.cdll.LoadLibrary(lib_path[0])
+  File "P:\Python\Python27\lib\ctypes\__init__.py", line 443, in LoadLibrary
+    return self._dlltype(name)
+  File "P:\Python\Python27\lib\ctypes\__init__.py", line 365, in __init__
+    self._handle = _dlopen(self._name, mode)
+WindowsError: [Error 127] The specified procedure could not be found
+
+There's some posting saying this is because you have multiple version of Python installed. I tried to edit the environmental variables (remove path for other versions) but it doesn't work. Then I tried to uninstall other versions and restart but it still did't work. It seems like the loading of "xgboost.dll" failed, for no reason, when it is loaded by "lib = ctypes.cdll.LoadLibrary(lib_path[0])", though the lib_path seems fine. 
+
+I then find out that the real failure step is just "_dlopen('c:\\xgboost\\lib\\libxgboost.dll', 0)", where _dlopen is imported by "from _ctypes import LoadLibrary as _dlopen", where _ctypes.pyd is a DLL file. Then I tried to figure out why the loading of "libxgboost.dll" failes even if I used the correct path. Someone argues the failure of loading DLL may be because it depends on other DLLs which could not be found. 
+
+Things seems to fell in bottlebeck. Then I tried to import xgboost thorugh the python.exe in Anaconda. It works! Then I restart Pycharm-Anaconda -- it works!
+
+I still don't know exact how this problem got fixed. Maybe uninstall other version works, but I don't know why it won't work immediately after I uninstall and restart. But I do learnt things like DLL (I edit "C:\Program Files\Anaconda2\Lib\ctypes\__init__.py" to dig into the problem; "_ctypes.__file__" in python will show the dir 'C:\\Program Files\\Anaconda2\\DLLs\\_ctypes.pyd'), which is a good thing. 
 
 Source: 
 https://xgboost.readthedocs.io/en/latest/build.html
